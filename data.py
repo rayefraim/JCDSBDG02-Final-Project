@@ -1,5 +1,3 @@
-from pandas import read_csv
-
 keys = ["C","C#","D","D#","E","F","F#",'G',"G#","A","A#","B"]
 columns_regression = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness',
        'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms',
@@ -26,4 +24,3 @@ messages_score = [
     "Your song are popularity score are far below the average score. Maybe your song is very unique or just not the preference of spotify's user.If you want to get more popularity, according to the data, dance song and high energy song usually are more popular in Spotify."
 ]
 
-dataSpotify = read_csv("Spotify Full Data with Genre.csv").drop(columns="Unnamed: 0",axis=1).head(10)

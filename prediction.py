@@ -1,6 +1,7 @@
 import pickle
 from pandas import DataFrame, get_dummies, read_csv
 from data import columns_regression, columns_cluster, dictGenre
+from sqlalchemy import create_engine
 
 ### Import Spotipy API and authenticating
 import spotipy
@@ -9,6 +10,16 @@ cid = '9d6662eb9b5d4385a41336390cd9053e'
 secret = 'd36d9e2db9fb4da8b4e15cf72a9835ae'
 client_credentials_manager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+### Connection to MySQL
+engine = create_engine('mysql://root:ray1581994@localhost/spotify?host=localhost?port=3306')
+conn = engine.connect()
+dataset = conn.execute("Select * from spotify.dataset").fetchall()
+dataset = DataFrame(dataset,columns=['Unnamed: 0', 'track_id', 'track_name', 'artist_name', 'id', 'uri',
+       'track_href', 'analysis_url', 'year', 'danceability', 'energy', 'key',
+       'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness',
+       'liveness', 'valence', 'tempo', 'type', 'duration_ms', 'time_signature',
+       'popularity', 'genre'])
 
 model_regression = pickle.load(open("regression.sav",'rb'))
 model_clustering = pickle.load(open("clustering.sav","rb"))
@@ -36,7 +47,7 @@ def prediction_clustering(data):
     return convert
 
 def get_recommendation(genre):
-    df_rec = read_csv("Spotify Full Data with Genre.csv")
+    df_rec = dataset
     index_song = df_rec[df_rec["genre"] == genre].sort_values(by="popularity",ascending=False).head(5).index
 
     track_name = []

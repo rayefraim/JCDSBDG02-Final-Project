@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
-from data import keys,messages_score, dataSpotify
-from prediction import prediction_regression, prediction_clustering, get_recommendation, prediction_song
+from data import keys, messages_score
+from prediction import prediction_regression, prediction_clustering, get_recommendation, prediction_song, dataset
 
 app = Flask (__name__)
 
@@ -27,7 +27,7 @@ def prediction():
 
 @app.route('/visualization')
 def visualization():
-    return render_template('Data_Visualisation.html', data_spotify = dataSpotify)
+    return render_template('Data_Visualisation.html', data_spotify = dataset.head(10))
 
 @app.route('/Input_Song_Name_and_Artist_Name', methods=["GET","POST"])
 def prediction2():
