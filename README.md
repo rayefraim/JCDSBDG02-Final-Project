@@ -28,6 +28,9 @@ Features on this dataset are:
 > - tempo - The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
 > - popularity - The popularity of the track. The value will be between 0 and 100, with 100 being the most popular. The popularity of a track is a value between 0 and 100, with 100 being the most popular. The popularity is calculated by algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are. Generally speaking, songs that are being played a lot now will have a higher popularity than songs that were played a lot in the past. Duplicate tracks (e.g. the same track from a single and an album) are rated independently. Artist and album popularity is derived mathematically from track popularity.
 
+The example for the dataset are as follow:
+
+
 ## Model
 #### Predicting Popularity Score
 This model used Random Forest Regressor to predict the prediction of the popularity score
@@ -45,9 +48,29 @@ To help user with real songs based on the audio features they have inputted, sim
 
 ## Result
 
-### Random Forest Regressor
-Mean Average Error : 6.75%
-Root Mean Square Error : 8.41%
+### Regression Model
+
+Using KFold to search for the best model:
+
+| | MAE	| RMSE |	R2 Score |
+|------------------|--------|------|------ |
+|Linear Regression |	7.074 |	8.736 |	0.084|
+|Lasso |	7.280 |	8.996 |	0.028 |
+|Ridge |	7.072 |	8.734 |	0.084 |
+|DecisionTreeRegressor |	9.402 |	11.890 |	-0.698 |
+|RandomForestRegressor |	6.746 |	8.432  |	0.146  |
+|GradientBoostingRegressor |	6.800 |	8.438  |	0.144  |
+|XGBRegressor |	6.944 |	8.646 |	0.102 |
+|KNeighborsRegressor	7.870	9.782	-0.148
+
+The model with the best error score is Random Forest Regressor, and using the hyperparameter (RandomSearchCV) i decided to continue to use the default parameter since the tuning didn't show better result
+
+The result was
+
+|Error | Error Rate|
+|---|---|
+|Mean Average Error | 6.75%|
+|Root Mean Square Error | 8.41%|
 
 The model is able to predict the songs from 50-70 score, but cannot predict well for songs with more than 70. Need to explore other features to improve the score prediction
 
@@ -64,7 +87,6 @@ The genres are:
 - Pop Rock
 - Hip Hop Disco
 - R&B
-
 
 
 
