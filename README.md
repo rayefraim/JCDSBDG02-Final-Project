@@ -29,6 +29,21 @@ Features on this dataset are:
 > - popularity - The popularity of the track. The value will be between 0 and 100, with 100 being the most popular. The popularity of a track is a value between 0 and 100, with 100 being the most popular. The popularity is calculated by algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are. Generally speaking, songs that are being played a lot now will have a higher popularity than songs that were played a lot in the past. Duplicate tracks (e.g. the same track from a single and an album) are rated independently. Artist and album popularity is derived mathematically from track popularity.
 
 The example for the dataset are as follow:
+![](https://i.imgur.com/5hKd9do.png)
+
+## Data Pre-Processing
+
+There are few problems from the dataset :
+1. What does time_signature 0, 1, and 5 means?
+2. There are tracks with long duration than most usual song
+3. The data seems to include podcast/talkshow, which shouldn't be count as music. While instrumental should be okay
+4. There are binaural sounds in the data, which people may listen for therapic purpose. We'll try to filter out those
+
+The solutions:
+1. Dropping the data with time signature 0,1,5 since it doesn't make sense, it seems there is issue with the time signature recognition from several forum. Even after manual check, the time signature were combination of 4/4 or even 3/4.
+2. Create a range for duration that make sense for a music duration using outlier from upper limit.
+3. Using "speechiness" features to filter out the talkshow/podcast with the speechiness score above 0.66
+4. Using "tempo" features to filter out the binaural recording. Song under lower limit were dropped
 
 
 ## Model
@@ -37,7 +52,7 @@ This model used Random Forest Regressor to predict the prediction of the popular
 
 
 #### Clustering Song to Genres
-The songs were clustered using KMeans clustering method. Before the features get predicted by the model, the data was normalized using Standard Scaler and then reduce the feature dimensionality using PCA with n-components = 4.
+The songs were clustered using KMeans clustering method. Before the features get predicted by the model, the data was normalized using Standard Scaler and then reduce the feature dimensionality using PCA with n-components = 4 from the variance drop-off point.
 
 
 
@@ -50,7 +65,7 @@ To help user with real songs based on the audio features they have inputted, sim
 
 ### Regression Model
 
-Using KFold to search for the best model:
+Using KFold to search for the best model with 5 fold CV:
 
 | | MAE	| RMSE |	R2 Score |
 |------------------|--------|------|------ |
@@ -61,7 +76,7 @@ Using KFold to search for the best model:
 |RandomForestRegressor |	6.746 |	8.432  |	0.146  |
 |GradientBoostingRegressor |	6.800 |	8.438  |	0.144  |
 |XGBRegressor |	6.944 |	8.646 |	0.102 |
-|KNeighborsRegressor	7.870	9.782	-0.148
+|KNeighborsRegressor	|	7.870	|	9.782	|	-0.148	|
 
 The model with the best error score is Random Forest Regressor, and using the hyperparameter (RandomSearchCV) i decided to continue to use the default parameter since the tuning didn't show better result
 
@@ -76,17 +91,34 @@ The model is able to predict the songs from 50-70 score, but cannot predict well
 
 
 ### KMeans
-Clustered to 8 different genres.
+Clustered to 9 different genres.
 The KMeans results were labelled based on their audio features and manually listen and search for the genre online.
+The result from the clustering with features average as the parameter
+
+|	|danceability	|	energy	|	loudness	|	acousticness	|	instrumentalness	|	liveness	|	valence	|	tempo	|	speechiness	|
+|---	|-------	|-------	|-------	|-------	|--------	|-------	|-------	|--------	|--------	|
+|cat0	|	0.7038	|	0.7011	|	-5.6968	|	0.1268	|	0.0000	|	0.1291	|	0.6201	|	119.4799	|	0.0872	|
+|cat1	|	0.5702	|	0.3968	|	-9.6268	|	0.5918	|	0.0011	|	0.1120	|	0.3152	|	109.5219	|	0.0398	|
+|cat2	|	0.7299	|	0.6890	|	-5.7839	|	0.1317	|	0.0000	|	0.1282	|	0.6010	|	117.7829	|	0.1287	|
+|cat3	|	0.5296	|	0.5455	|	-6.8413	|	0.3893	|	0.0000	|	0.1326	|	0.4351	|	131.9123	|	0.0454	|
+|cat4	|	0.2937	|	0.0872	|	-23.3402	|	0.9578	|	0.9118	|	0.1040	|	0.1010	|	94.9623	|	0.0423	|
+|cat5	|	0.2813	|	0.1250	|	-21.5246	|	0.9377	|	0.8544	|	0.1045	|	0.1115	|	102.4899	|	0.0437	|
+|cat6	|	0.5215	|	0.7536	|	-5.4285	|	0.0553	|	0.0000	|	0.1955	|	0.3824	|	129.9244	|	0.0501	|
+|cat7	|	0.5404	|	0.7725	|	-5.2470		|0.0457	|	0.0001	|	0.2112	|	0.3775	|	129.9971	|	0.0655	|
+|cat8	|	0.5910	|	0.4296	|	-9.5420	|	0.5084	|	0.0080	|	0.1136	|	0.2814	|	106.1739	|	0.0532	|
+  
 The genres are: 
-- Pop Disco Electronics
-- Alternative
-- Hip Hop Electronics
-- Ballad
-- Instrumental
-- Pop Rock
-- Hip Hop Disco
-- R&B
+| Category | Genre |
+| ------- | ------ |
+| cat0 | Pop Disco Electronics |
+| cat1 | Alternative |
+| cat2 | Hip Hop Electronics |
+| cat3 | Ballad |
+| cat4 | Instrumental |
+| cat5 | Intstrumental |
+| cat6 | Pop Rock |
+| cat7 | Hip Hop Disco |
+| cat8 | R&B |
 
 
 
